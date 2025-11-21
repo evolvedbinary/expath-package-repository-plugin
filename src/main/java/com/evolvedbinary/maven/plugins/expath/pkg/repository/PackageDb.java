@@ -1,4 +1,4 @@
-package org.exist.maven.plugins.publicxarrepo;
+package com.evolvedbinary.maven.plugins.expath.pkg.repository;
 
 import com.evolvedbinary.j8fu.Either;
 import com.evolvedbinary.j8fu.OptionalUtil;
@@ -25,8 +25,8 @@ import java.util.*;
 import static com.evolvedbinary.j8fu.Either.Left;
 import static com.evolvedbinary.j8fu.Either.Right;
 import static com.evolvedbinary.j8fu.tuple.Tuple.Tuple;
-import static org.exist.maven.plugins.publicxarrepo.PackageInfo.METADATA_FILE_EXTENSION;
-import static org.exist.maven.plugins.publicxarrepo.XmlUtils.DOCUMENT_BUILDER_FACTORY;
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.PackageInfo.METADATA_FILE_EXTENSION;
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.XmlUtils.DOCUMENT_BUILDER_FACTORY;
 
 /**
  * Just a mapping from either {@link Package#abbrev} or {@link Package#name} to {@link PackageInfo#path}.

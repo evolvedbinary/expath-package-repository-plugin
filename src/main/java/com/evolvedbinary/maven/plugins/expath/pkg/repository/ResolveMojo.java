@@ -1,4 +1,4 @@
-package org.exist.maven.plugins.publicxarrepo;
+package com.evolvedbinary.maven.plugins.expath.pkg.repository;
 
 import com.evolvedbinary.j8fu.lazy.LazyVal;
 import org.apache.http.HttpHost;
@@ -42,7 +42,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.apache.http.HttpStatus.SC_OK;
-import static org.exist.maven.plugins.publicxarrepo.XmlUtils.DOCUMENT_BUILDER_FACTORY;
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.XmlUtils.DOCUMENT_BUILDER_FACTORY;
 
 @Mojo(name = "resolve", defaultPhase = LifecyclePhase.GENERATE_SOURCES, threadSafe = true, requiresProject = false)
 public class ResolveMojo extends AbstractMojo {
@@ -50,8 +50,15 @@ public class ResolveMojo extends AbstractMojo {
     @Parameter(required = true, defaultValue = "http://exist-db.org/exist/apps/public-repo")
     private String repoUri;
 
-    @Parameter(required = true)
+    /**
+     * @deprecated Use {@link #elementalVersion} instead.
+     */
+    @Deprecated
+    @Parameter(required = false)
     private String existDbVersion;
+
+    @Parameter(required = true)
+    private String elementalVersion;
 
     @Parameter(required = true, defaultValue = "true")
     private boolean cache;
@@ -231,7 +238,12 @@ public class ResolveMojo extends AbstractMojo {
         final StringBuilder builder = new StringBuilder();
         builder.append(getRepoUri());
         builder.append("/find?processor=");
-        builder.append(existDbVersion);
+        if (elementalVersion != null) {
+            builder.append(elementalVersion);
+        } else {
+            builder.append(existDbVersion);
+        }
+
         if (pkg.getName() != null) {
             builder.append("&name=");
             builder.append(pkg.getName());

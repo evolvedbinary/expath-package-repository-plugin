@@ -1,39 +1,33 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <parent>
-    <groupId>org.sonatype.oss</groupId>
-    <artifactId>oss-parent</artifactId>
-    <version>9</version>
-    <relativePath />
-  </parent>
-
-  <groupId>org.exist-db.maven.plugins</groupId>
-  <artifactId>public-xar-repo-plugin</artifactId>
+  <groupId>com.evolvedbinary.maven.plugins</groupId>
+  <artifactId>expath-package-repository-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <version>1.2.1-SNAPSHOT</version>
 
-  <name>Public XAR Repo Maven Plugin</name>
-  <url>https://github.com/exist-db/public-xar-repo-plugin</url>
+  <name>EXPath Package Repository Maven Plugin</name>
+  <description>Maven plugin to download EXPath Package files from a EXPath Package Repository</description>
+  <url>https://github.com/evolvedbinary/public-xar-repo-plugin</url>
   <inceptionYear>2019</inceptionYear>
 
   <organization>
-    <name>The eXist-db Project</name>
-    <url>http://www.exist-db.org</url>
+    <name>Evolved Binary</name>
+    <url>https://www.evolvedbinary.com</url>
   </organization>
 
   <licenses>
     <license>
-      <name>GNU Lesser General Public License, version 2.1</name>
-      <url>http://opensource.org/licenses/LGPL-2.1</url>
+      <name>GNU Lesser General Public License, version 2.1 only</name>
+      <url>https://opensource.org/licenses/LGPL-2.1</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/exist-db/public-xar-repo-plugin.git</connection>
-    <developerConnection>scm:git:https://github.com/exist-db/public-xar-repo-plugin.git</developerConnection>
-    <url>scm:git:https://github.com/exist-db/public-xar-repo-plugin.git</url>
+    <connection>scm:git:https://github.com/evolvedbinary/public-xar-repo-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/evolvedbinary/public-xar-repo-plugin.git</developerConnection>
+    <url>scm:git:https://github.com/evolvedbinary/public-xar-repo-plugin.git</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -149,6 +143,37 @@
   </dependencies>
 
   <build>
+    <pluginManagement>
+      <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <version>3.2.2</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.2.1</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.3.1</version>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>3.2.8</version>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>0.9.0</version>
+            <extensions>true</extensions>
+          </plugin>
+      </plugins>
+    </pluginManagement>
+
     <plugins>
 
       <plugin>
@@ -213,7 +238,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>3.2.2</version>
         <configuration>
           <archive>
             <manifest>
@@ -237,7 +261,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
-        <version>3.2.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -261,7 +284,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.3.1</version>
         <configuration>
           <archive>
             <manifest>
@@ -285,16 +307,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-        <version>2.5.3</version>
-        <configuration>
-          <mavenExecutorId>forked-path</mavenExecutorId>
-        </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-gpg-plugin</artifactId>
-        <version>3.0.1</version>
+          <version>3.1.1</version>
+          <configuration>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <tagNameFormat>expath-package-repository-plugin-@{project.version}</tagNameFormat>
+            <releaseProfiles>expath-package-repository-plugin-release</releaseProfiles>
+          </configuration>
       </plugin>
 
       <plugin>
@@ -327,6 +345,66 @@
     </plugins>
 
   </build>
+
+  <profiles>
+      <profile>
+          <!-- NOTE: this is used from the maven-release-plugin -->
+          <id>expath-package-repository-plugin-release</id>
+          <build>
+              <plugins>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-source-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <id>attach-sources</id>
+                              <phase>package</phase>
+                              <goals>
+                                  <goal>jar-no-fork</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-javadoc-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <id>attach-sources</id>
+                              <phase>package</phase>
+                              <goals>
+                                  <goal>jar</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.apache.maven.plugins</groupId>
+                      <artifactId>maven-gpg-plugin</artifactId>
+                      <executions>
+                          <execution>
+                              <id>sign-artifacts</id>
+                              <phase>verify</phase>
+                              <goals>
+                                  <goal>sign</goal>
+                              </goals>
+                          </execution>
+                      </executions>
+                  </plugin>
+                  <plugin>
+                      <groupId>org.sonatype.central</groupId>
+                      <artifactId>central-publishing-maven-plugin</artifactId>
+                      <configuration>
+                          <publishingServerId>central</publishingServerId>
+                          <deploymentName>${project.artifactId}-${project.version}</deploymentName>
+                          <failOnBuildFailure>true</failOnBuildFailure>
+                          <waitUntil>validated</waitUntil>
+                      </configuration>
+                  </plugin>
+              </plugins>
+          </build>
+      </profile>
+  </profiles>
 
   <pluginRepositories>
     <pluginRepository>

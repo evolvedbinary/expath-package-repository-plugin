@@ -1,4 +1,4 @@
-package org.exist.maven.plugins.publicxarrepo;
+package com.evolvedbinary.maven.plugins.expath.pkg.repository;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

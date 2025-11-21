@@ -1,22 +1,22 @@
-# Public XAR Repo Maven Plugin
+# EXPath Package Repository Maven Plugin
 
-[![Build Status](https://travis-ci.com/eXist-db/public-xar-repo-plugin.svg?branch=master)](https://travis-ci.com/eXist-db/public-xar-repo-plugin)
-[![Java 8](https://img.shields.io/badge/java-8-blue.svg)](http://java.oracle.com)
+[![Build Status](https://dl.circleci.com/status-badge/img/gh/evolvedbinary/expath-package-repository-plugin/tree/main.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/evolvedbinary/expath-package-repository-plugin/tree/main)
+[![Java 8](https://img.shields.io/badge/java-8-blue.svg)](https://adoptopenjdk.net/)
 [![License](https://img.shields.io/badge/license-LGPL%202.1-blue.svg)](https://www.gnu.org/licenses/lgpl-2.1.html)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.exist-db.maven.plugins/public-xar-repo-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.exist-db.maven.plugins/public-xar-repo-plugin)
+[![Maven Central](https://img.shields.io/maven-central/v/com.evolvedbinary.maven.plugins/expath-package-repository-plugin?logo=apachemaven&label=maven+central&color=green)](https://central.sonatype.com/search?namespace=com.evolvedbinary.maven.plugins)
 
-A Maven plugin for resolving EXPath Packages from the Public Repo.
+A Maven plugin for downloading EXPath Packages from an EXPath Package Repository.
 
 
 ## Example Use
 
-For example if you wanted to download the latest version of the `functx` and `markdown` packages from the eXist-db Public Repository for eXist-db version 4.7.0, you would place the following in your `pom.xml` file:
+For example if you wanted to download the latest version of the `functx` and `markdown` packages from the eXist-db Public Repository for Elemental version 6.4.0, you would place the following in your `pom.xml` file:
 
 ```xml
 <plugin>
-    <groupId>org.exist-db.maven.plugins</groupId>
-    <artifactId>public-xar-repo-plugin</artifactId>
-    <version>1.1.1</version>
+    <groupId>com.evolvedbinary.maven.plugins</groupId>
+    <artifactId>expath-package-repository-plugin</artifactId>
+    <version>1.3.0</version>
     <executions>
         <execution>
             <id>fetch-xars</id>
@@ -26,7 +26,7 @@ For example if you wanted to download the latest version of the `functx` and `ma
             </goals>
             <configuration>
                 <repoUri>http://exist-db.org/exist/apps/public-repo</repoUri>
-                <existDbVersion>4.7.0</existDbVersion>
+                <elementalVersion>6.4.0</elementalVersion>
                 <packages>
                     <package>
                         <abbrev>functx</abbrev>

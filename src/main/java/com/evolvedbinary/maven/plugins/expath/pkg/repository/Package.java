@@ -1,4 +1,4 @@
-package org.exist.maven.plugins.publicxarrepo;
+package com.evolvedbinary.maven.plugins.expath.pkg.repository;
 
 import com.evolvedbinary.j8fu.tuple.Tuple2;
 import org.apache.maven.plugins.annotations.Parameter;

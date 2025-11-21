@@ -1,4 +1,4 @@
-package org.exist.maven.plugins.publicxarrepo;
+package com.evolvedbinary.maven.plugins.expath.pkg.repository;
 
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.settings.Proxy;

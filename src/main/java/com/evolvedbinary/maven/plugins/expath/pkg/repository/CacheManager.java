@@ -1,4 +1,4 @@
-package org.exist.maven.plugins.publicxarrepo;
+package com.evolvedbinary.maven.plugins.expath.pkg.repository;
 
 import com.evolvedbinary.j8fu.tuple.Tuple2;
 import org.apache.maven.plugin.logging.Log;
@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.evolvedbinary.j8fu.tuple.Tuple.Tuple;
-import static org.exist.maven.plugins.publicxarrepo.FileUtils.sha256;
-import static org.exist.maven.plugins.publicxarrepo.PackageInfo.METADATA_FILE_EXTENSION;
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.FileUtils.sha256;
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.PackageInfo.METADATA_FILE_EXTENSION;
 
 public class CacheManager {
     private final Path dir;
