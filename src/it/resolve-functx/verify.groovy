@@ -19,14 +19,14 @@ if (!Files.exists(target) || !Files.isDirectory(target)) {
 
 final Path xarOutputDir = target.resolve("xars")
 
-final Path functxXar = xarOutputDir.resolve("functx-1.0.xar")
+final Path functxXar = xarOutputDir.resolve("functx-1.0.1.xar")
 if (!Files.exists(functxXar)) {
     System.err.println("xar file is missing.")
     return false
 }
 
-functxXar.withInputStream() { actualIs ->
-    assertEquals("da85074ce5edbeceeaa56c431b7f551e6862dfd83b901670072b6b683266e74f", checksum(actualIs))
+try (final InputStream actualIs = Files.newInputStream(functxXar)) {
+    assertEquals("f1b6379b790c20e18b5b2784ad233bcb1149f6da586a4a29c546c7d4d99614e3", checksum(actualIs))
 }
 
 def checksum(final InputStream is) {

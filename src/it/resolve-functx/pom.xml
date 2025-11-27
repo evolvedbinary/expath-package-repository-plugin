@@ -6,6 +6,7 @@
     <groupId>com.evolvedbinary.maven.plugins.it.expath-package-repository-plugin</groupId>
     <artifactId>resolve-functx</artifactId>
     <version>1.0.0</version>
+    <packaging>pom</packaging>
 
     <name>Test Resolving FunctX Library</name>
     <description>Integration Test for Resolving FunctX Library</description>
@@ -29,7 +30,7 @@
                             <packages>
                                 <package>
                                     <abbrev>functx</abbrev>
-                                    <version>1.0</version>
+                                    <version>1.0.1</version>
                                 </package>
                             </packages>
                         </configuration>
