@@ -31,8 +31,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.fluent.Executor;
 import org.apache.http.client.fluent.Request;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -58,6 +60,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.SocketTimeoutException;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -65,6 +68,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import static org.apache.http.HttpStatus.SC_OK;
 import static com.evolvedbinary.maven.plugins.expath.pkg.repository.XmlUtils.DOCUMENT_BUILDER_FACTORY;
@@ -111,12 +115,19 @@ public class ResolveMojo extends AbstractMojo {
     private SettingsDecrypter decrypter;
 
     private final PoolingHttpClientConnectionManager poolingHttpClientConnectionManager = new PoolingHttpClientConnectionManager();
+    private final RequestConfig httpRequestConfig = RequestConfig.custom()
+        .setConnectTimeout(10_000)
+        .setSocketTimeout(10_000)
+        .setConnectionRequestTimeout(3_000)
+        .build();
 
     private final LazyVal<List<Proxy>> proxies = new LazyVal<>(() -> MojoUtils.getProxies(session, decrypter));
 
 
     public ResolveMojo() {
+        poolingHttpClientConnectionManager.setMaxTotal(20);
         poolingHttpClientConnectionManager.setDefaultMaxPerRoute(15);
+        poolingHttpClientConnectionManager.setValidateAfterInactivity(15_000);
     }
 
     @Override
@@ -147,9 +158,9 @@ public class ResolveMojo extends AbstractMojo {
                 cacheManager = null;
             }
 
-            final PackageInfo pkgInfo = offline || session.isOffline() ? null : getPackageInfo(pkg);
+            @Nullable final PackageInfo pkgInfo = offline || session.isOffline() ? null : getPackageInfo(pkg);
 
-            Path path = cacheManager != null ? cacheManager.get(pkg, pkgInfo) : null;
+            @Nullable Path path = cacheManager != null ? cacheManager.get(pkg, pkgInfo) : null;
             if (path != null) {
                 if (!Files.exists(outputDirectoryPath)) {
                     Files.createDirectories(outputDirectoryPath);
@@ -204,7 +215,10 @@ public class ResolveMojo extends AbstractMojo {
     private CloseableHttpClient buildHttpClient(@Nullable final Proxy proxy) {
         final HttpClientBuilder clientBuilder = HttpClients
                 .custom()
-                .setConnectionManager(poolingHttpClientConnectionManager);
+                .setConnectionManager(poolingHttpClientConnectionManager)
+                .setDefaultRequestConfig(httpRequestConfig)
+                .evictIdleConnections(30, TimeUnit.SECONDS)
+                .evictExpiredConnections();
 
         if (proxy != null && proxy.getUsername() != null && !proxy.getUsername().isEmpty()) {
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -227,10 +241,10 @@ public class ResolveMojo extends AbstractMojo {
         return request;
     }
 
-    private PackageInfo getPackageInfo(final Package pkg) throws MojoExecutionException {
+    private @Nullable PackageInfo getPackageInfo(final Package pkg) throws MojoExecutionException {
         getLog().info("Retrieving package info for " + pkg.getName() != null ? pkg.getName() : pkg.getAbbrev());
+        final String uri = getFindUri(pkg) + "&info=true";
         try {
-            final String uri = getFindUri(pkg) + "&info=true";
             @Nullable final Proxy proxy = MojoUtils.getProxyForUrl(proxies.get(), uri);
 
             final CloseableHttpClient client = buildHttpClient(proxy);
@@ -241,7 +255,7 @@ public class ResolveMojo extends AbstractMojo {
             final HttpResponse response = executor.execute(request).returnResponse();
             if (response.getStatusLine().getStatusCode() != SC_OK) {
                 getLog().error("Received HTTP " + response.getStatusLine().getStatusCode() + " when trying to access: " + uri);
-                throw new MojoExecutionException("Unable to get package info");
+                return null;
             }
 
             final DocumentBuilder builder = DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
@@ -249,11 +263,20 @@ public class ResolveMojo extends AbstractMojo {
                 final Document document = builder.parse(is);
                 final Element root = document.getDocumentElement();
                 if (root == null || !root.getLocalName().equals("found")) {
-                    throw new MojoExecutionException("Received package info is invalid");
+                    getLog().error("Received package info from server is invalid for URI: " + uri);
+                    return null;
                 }
 
                 return new PackageInfo(root.getAttribute("sha256"), root.getAttribute("version"), root.getAttribute("path"));
             }
+        } catch (final ConnectTimeoutException e) {
+            getLog().error("Timed out whilst trying to connect to server at URI: " + uri);
+            return null;
+
+        } catch (final SocketTimeoutException e) {
+            getLog().error("Timed out whilst awaiting response from server at URI: " + uri);
+            return null;
+
         } catch (final IOException | ParserConfigurationException | SAXException e) {
             throw new MojoExecutionException(e.getMessage(), e);
         }
