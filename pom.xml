@@ -4,7 +4,7 @@
   <groupId>com.evolvedbinary.maven.plugins</groupId>
   <artifactId>expath-package-repository-plugin</artifactId>
   <packaging>maven-plugin</packaging>
-  <version>1.3.0</version>
+  <version>1.3.1-SNAPSHOT</version>
 
   <name>EXPath Package Repository Maven Plugin</name>
   <description>Maven plugin to download EXPath Package files from a EXPath Package Repository</description>
@@ -28,7 +28,7 @@
     <connection>scm:git:https://github.com/evolvedbinary/public-xar-repo-plugin.git</connection>
     <developerConnection>scm:git:https://github.com/evolvedbinary/public-xar-repo-plugin.git</developerConnection>
     <url>scm:git:https://github.com/evolvedbinary/public-xar-repo-plugin.git</url>
-    <tag>expath-package-repository-plugin-1.3.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
