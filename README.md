@@ -10,13 +10,13 @@ A Maven plugin for downloading EXPath Packages from an EXPath Package Repository
 
 ## Example Use
 
-For example if you wanted to download the latest version of the `functx` and `markdown` packages from the eXist-db Public Repository for Elemental version 6.4.0, you would place the following in your `pom.xml` file:
+For example if you wanted to download the latest version of the `functx` and `markdown` packages from the eXist-db Public Repository for Elemental version 6.11.0, you would place the following in your `pom.xml` file:
 
 ```xml
 <plugin>
     <groupId>com.evolvedbinary.maven.plugins</groupId>
     <artifactId>expath-package-repository-plugin</artifactId>
-    <version>1.3.1</version>
+    <version>1.4.0</version>
     <executions>
         <execution>
             <id>fetch-xars</id>
@@ -26,7 +26,7 @@ For example if you wanted to download the latest version of the `functx` and `ma
             </goals>
             <configuration>
                 <repoUri>http://exist-db.org/exist/apps/public-repo</repoUri>
-                <elementalVersion>6.4.0</elementalVersion>
+                <elementalVersion>6.11.0</elementalVersion>
                 <packages>
                     <package>
                         <abbrev>functx</abbrev>
