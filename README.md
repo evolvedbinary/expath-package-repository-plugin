@@ -16,7 +16,7 @@ For example if you wanted to download the latest version of the `functx` and `ma
 <plugin>
     <groupId>com.evolvedbinary.maven.plugins</groupId>
     <artifactId>expath-package-repository-plugin</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <executions>
         <execution>
             <id>fetch-xars</id>
