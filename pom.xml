@@ -140,7 +140,7 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.21.0</version>
+      <version>2.22.0</version>
     </dependency>
 
     <dependency>
@@ -192,7 +192,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.3.1</version>
+            <version>3.4.0</version>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -207,13 +207,39 @@
           <plugin>
             <groupId>org.sonatype.central</groupId>
             <artifactId>central-publishing-maven-plugin</artifactId>
-            <version>0.9.0</version>
+            <version>0.11.0</version>
             <extensions>true</extensions>
           </plugin>
       </plugins>
     </pluginManagement>
 
     <plugins>
+
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.6.3</version>
+        <executions>
+          <execution>
+            <id>enforce-maven-version</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>1.8</version>
+                </requireJavaVersion>
+                <requireMavenVersion>
+                  <version>3.9.0</version>
+                </requireMavenVersion>
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
 
       <plugin>
         <groupId>com.mycila</groupId>
@@ -250,9 +276,9 @@
       </plugin>
 
       <plugin>
-        <groupId>com.code54.mojo</groupId>
-        <artifactId>buildversion-plugin</artifactId>
-        <version>1.0.3</version>
+        <groupId>com.evolvedbinary.maven.plugins</groupId>
+        <artifactId>buildversion-maven-plugin</artifactId>
+        <version>2.0.0</version>
         <executions>
           <execution>
             <phase>validate</phase>
@@ -266,7 +292,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.9.0</version>
+        <version>3.11.0</version>
         <executions>
           <execution>
             <id>analyze</id>
@@ -302,7 +328,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.14.1</version>
+        <version>3.15.0</version>
         <configuration>
           <source>${project.build.source}</source>
           <target>${project.build.target}</target>
@@ -382,7 +408,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
-          <version>3.2.0</version>
+          <version>3.3.1</version>
           <configuration>
             <autoVersionSubmodules>true</autoVersionSubmodules>
             <tagNameFormat>expath-package-repository-plugin-@{project.version}</tagNameFormat>
@@ -393,7 +419,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-invoker-plugin</artifactId>
-        <version>3.9.1</version>
+        <version>3.10.1</version>
         <configuration>
           <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
           <localRepositoryPath>${project.build.directory}/it-repo</localRepositoryPath>
@@ -485,10 +511,6 @@
     <pluginRepository>
       <id>sonatype-releases</id>
       <url>http://oss.sonatype.org/content/repositories/releases</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>clojars.org</id>
-      <url>http://clojars.org/repo</url>
     </pluginRepository>
   </pluginRepositories>
 
