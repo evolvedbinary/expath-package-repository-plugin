@@ -70,6 +70,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.Utils.isEmpty;
+import static com.evolvedbinary.maven.plugins.expath.pkg.repository.Utils.isNonEmpty;
 import static org.apache.http.HttpStatus.SC_OK;
 import static com.evolvedbinary.maven.plugins.expath.pkg.repository.XmlUtils.DOCUMENT_BUILDER_FACTORY;
 
@@ -86,8 +88,11 @@ public class ResolveMojo extends AbstractMojo {
     @Parameter(required = false)
     private String existDbVersion;
 
-    @Parameter(required = true)
+    @Parameter(required = false)
     private String elementalVersion;
+
+    @Parameter(required = false)
+    private String elementalExistDbPkgCompatibleVersion;
 
     @Parameter(required = true, defaultValue = "true")
     private boolean cache;
@@ -132,9 +137,17 @@ public class ResolveMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
+        if (isEmpty(elementalVersion) && isEmpty(existDbVersion)) {
+            getLog().warn("Either the elementalVersion of existDbVersion (deprecated) configuration parameter should be set!");
+        }
+
+        if (isNonEmpty(elementalExistDbPkgCompatibleVersion) && isEmpty(elementalVersion)) {
+            getLog().error("When the elementalExistDbPkgCompatibleVersion configuration parameter is set, elementalVersion configuration parameter must also be set!");
+            throw new MojoFailureException("Configuration parameter elementalExistDbPkgCompatibleVersion was set, but elementalVersion was not");
+        }
+
         for (final Package pkg : packages) {
-            if ((pkg.getName() == null || pkg.getName().isEmpty())
-                    && (pkg.getAbbrev() == null || pkg.getAbbrev().isEmpty())) {
+            if (isEmpty(pkg.getName()) && isEmpty(pkg.getAbbrev())) {
                 throw new MojoFailureException("Each configured package must have a `name` or `abbrev`");
             }
 
@@ -220,7 +233,7 @@ public class ResolveMojo extends AbstractMojo {
                 .evictIdleConnections(30, TimeUnit.SECONDS)
                 .evictExpiredConnections();
 
-        if (proxy != null && proxy.getUsername() != null && !proxy.getUsername().isEmpty()) {
+        if (proxy != null && isNonEmpty(proxy.getUsername())) {
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(
                     new AuthScope(proxy.getHost(), proxy.getPort()),
@@ -242,7 +255,7 @@ public class ResolveMojo extends AbstractMojo {
     }
 
     private @Nullable PackageInfo getPackageInfo(final Package pkg) throws MojoExecutionException {
-        getLog().info("Retrieving package info for " + pkg.getName() != null ? pkg.getName() : pkg.getAbbrev());
+        getLog().info("Retrieving package info for " + (isNonEmpty(pkg.getName()) ? pkg.getName() : pkg.getAbbrev()));
         final String uri = getFindUri(pkg) + "&info=true";
         try {
             @Nullable final Proxy proxy = MojoUtils.getProxyForUrl(proxies.get(), uri);
@@ -286,33 +299,40 @@ public class ResolveMojo extends AbstractMojo {
         final StringBuilder builder = new StringBuilder();
         builder.append(getRepoUri());
         builder.append("/find?processor=");
-        if (elementalVersion != null) {
-            builder.append(elementalVersion);
+        if (isNonEmpty(elementalVersion)) {
+            if (isEmpty(elementalExistDbPkgCompatibleVersion)) {
+                getLog().info("Using Elemental EXPath Package compatibility version: " + elementalVersion);
+                builder.append(elementalVersion);
+            } else {
+                getLog().warn("Using eXist-db EXPath Package compatibility version: " + elementalExistDbPkgCompatibleVersion + " for Elemental version: " + elementalVersion);
+                builder.append(elementalExistDbPkgCompatibleVersion);
+            }
         } else {
+            getLog().warn("Deprecated - Using eXist-db EXPath Package compatibility version: " + existDbVersion);
             builder.append(existDbVersion);
         }
 
-        if (pkg.getName() != null) {
+        if (isNonEmpty(pkg.getName())) {
             builder.append("&name=");
             builder.append(pkg.getName());
         }
-        if (pkg.getAbbrev() != null) {
+        if (isNonEmpty(pkg.getAbbrev())) {
             builder.append("&abbrev=");
             builder.append(pkg.getAbbrev());
         }
-        if (pkg.getVersion() != null) {
+        if (isNonEmpty(pkg.getVersion())) {
             builder.append("&version=");
             builder.append(pkg.getVersion());
         }
-        if (pkg.getSemanticVersion() != null) {
+        if (isNonEmpty(pkg.getSemanticVersion())) {
             builder.append("&semver=");
             builder.append(pkg.getSemanticVersion());
         }
-        if (pkg.getSemanticVersionMin() != null) {
+        if (isNonEmpty(pkg.getSemanticVersionMin())) {
             builder.append("&semver-min=");
             builder.append(pkg.getSemanticVersionMin());
         }
-        if (pkg.getSemanticVersionMax() != null) {
+        if (isNonEmpty(pkg.getSemanticVersionMax())) {
             builder.append("&semver-max=");
             builder.append(pkg.getSemanticVersionMax());
         }
